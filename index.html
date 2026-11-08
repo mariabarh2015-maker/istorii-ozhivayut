@@ -80,7 +80,9 @@ nav{min-height:78px;display:flex;align-items:center;justify-content:space-betwee
 .step h3{font-family:Georgia,serif;font-size:23px;font-weight:normal}
 .step p{font-size:14px;line-height:1.8;color:var(--muted)}
 .reviews{background:#e5eee9}
-.review-area{max-width:740px;margin:auto;text-align:center}
+
+.review-area{max-width:none!important;width:100%!important;margin:0!important;padding:0 30px!important;box-sizing:border-box;text-align:left}
+
 .stars{color:#b08a4c;letter-spacing:7px;font-size:24px;margin:15px 0}
 .review-area p{line-height:1.8;color:var(--muted)}
 .review-empty{border:1px solid #b7cec4;background:#ffffff80;padding:28px;margin:25px 0}
@@ -120,6 +122,57 @@ nav{min-height:65px}
 .work p{font-size:12px}
 .poster .play{width:48px;height:48px}
 .steps{grid-template-columns:1fr;gap:20px}
+}
+
+/* Новая нежно-мятная палитра */
+:root {
+  --cream: #E6F7F1;
+  --paper: #F5FFFB;
+  --mint: #A7E5D1;
+  --darkmint: #287B69;
+  --ink: #253B35;
+  --muted: #58746A;
+}
+
+header {
+  background: rgba(230,247,241,.96);
+  border-bottom-color: #C5E8DA;
+}
+
+.portfolio {
+  background: #D7F0E6;
+}
+
+.reviews {
+  background: #D7F0E6;
+}
+
+.hero-visual img {
+  background: #D7F0E6;
+}
+
+.filter {
+  border-color: #A7D5C3;
+}
+
+.poster {
+  background: #C5E8DA;
+}
+
+.step {
+  border-top-color: #A7D5C3;
+}
+
+footer {
+  border-top-color: #C5E8DA;
+}
+
+.btn.outline {
+  border-color: #A7D5C3;
+}
+
+.btn.outline:hover {
+  background: #D7F0E6;
 }
 </style>
 </head>
@@ -224,14 +277,26 @@ nav{min-height:65px}
 </section>
 
 
-<section class="section reviews" id="reviews">
-  <div class="wrap review-area">
-    <h2 style="font-family:Georgia,serif;font-size:48px;font-weight:normal">Отзывы</h2>
+<section class="section reviews" id="reviews" style="padding-left:30px;padding-right:30px">
+  <div class="review-area" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding-left:30px;padding-right:30px;width:100%;box-sizing:border-box">
+    <h2 style="font-family:Georgia,serif;font-size:48px;font-weight:normal;text-align:left">
+Истории оживают. Эмоции остаются.
+</h2>
+<p style="text-align:left;font-size:17px;line-height:1.7;margin:16px 0 30px;color:#58746A">
+За каждым фильмом — чья-то улыбка, счастливые слёзы и незабываемые моменты.
+</p>
     <div id="approved-reviews"></div>
 
-    <form name="reviews" method="POST" data-netlify="true"
-          netlify-honeypot="bot-field"
-          style="max-width:520px;margin:30px auto;text-align:left">
+<div id="review-success" style="display:none;background:#F5FFFB;border:1px solid #A7D5C3;border-radius:14px;padding:22px;max-width:520px;margin:20px 0;color:#287B69">
+  <strong>💚 Спасибо за ваш отзыв!</strong>
+  <p style="margin-top:10px;line-height:1.6">
+    Ваш отзыв отправлен и появится на сайте после проверки.
+  </p>
+</div>
+
+  <iframe name="reviews-hidden-frame" id="reviews-hidden-frame" style="display:none"></iframe> <form name="reviews" method="POST" target="reviews-hidden-frame"
+      action="https://script.google.com/macros/s/AKfycbwN7aN9JqaKlhH8Gws-asAiioIfMZoqa_Eh65DL4EZJQhPE83uDqDw5hUOeEy46PCJJ7g/exec"
+          style="max-width:520px;margin:30px 0;text-align:left">
       <input type="hidden" name="form-name" value="reviews">
       <p style="display:none">
         <label>Не заполнять: <input name="bot-field"></label>
@@ -253,7 +318,7 @@ nav{min-height:65px}
       </select>
 
       <label for="review-text">Ваш отзыв</label>
-      <textarea id="review-text" name="message" required maxlength="2000"
+      <textarea id="review-text" name="review" required maxlength="2000"
                 rows="5"
                 style="width:100%;padding:15px;margin:9px 0 22px;border:1px solid #b7cec4;border-radius:5px;resize:vertical"></textarea>
 
@@ -299,7 +364,7 @@ description:"Персональное новогоднее поздравлен�
 category:"holiday",type:"Новогоднее поздравление",
 image:"assets/teya.jpg",video:"assets/teya.mp4"
 },
-,
+
 {
 title:"Ваш ребёнок — главный герой сказки",
 description:"Волшебная история, в которой ваш ребёнок становится настоящим героем.",
@@ -434,5 +499,82 @@ document.querySelectorAll(".filter").forEach(button=>{
 });
 document.getElementById("year").textContent=new Date().getFullYear();
 </script>
+
+<script>
+(async function loadApprovedReviews() {
+  const container = document.getElementById('approved-reviews');
+  if (!container) return;
+
+  const url = 'https://script.google.com/macros/s/AKfycbwN7aN9JqaKlhH8Gws-asAiioIfMZoqa_Eh65DL4EZJQhPE83uDqDw5hUOeEy46PCJJ7g/exec';
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Ошибка загрузки');
+
+    const reviews = await response.json();
+    if (!Array.isArray(reviews)) return;
+
+    container.replaceChildren();
+
+    reviews.forEach(item => {
+      const card = document.createElement('div');
+      card.style.cssText = 'background:#F5FFFB;padding:22px;border-radius:14px;margin:16px 0;border:1px solid #A7D5C3';
+
+      const stars = document.createElement('div');
+      stars.textContent = '★'.repeat(Math.max(0, Math.min(5, Number(item.rating) || 0)));
+      stars.style.cssText = 'color:#287B69;font-size:22px';
+
+
+const header = document.createElement('div');
+header.style.cssText = 'display:flex;align-items:center;gap:12px;margin:10px 0';
+
+const avatar = document.createElement('div');
+avatar.textContent = String(item.name || '?').trim().charAt(0).toUpperCase();
+avatar.style.cssText = 'width:46px;height:46px;min-width:46px;border-radius:50%;background:#F8DCE8;color:#A84F76;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold';
+
+const name = document.createElement('strong');
+name.textContent = item.name;
+
+header.append(avatar, name);
+
+
+      const review = document.createElement('p');
+      review.textContent = item.review;
+      review.style.cssText = 'line-height:1.7;white-space:pre-wrap';
+
+      card.append(header, stars, review);
+      container.appendChild(card);
+    });
+  } catch (error) {
+    console.error('Не удалось загрузить отзывы:', error);
+  }
+})();
+</script>
+
+<script>
+(function () {
+  const form = document.querySelector('form[name="reviews"]');
+  const frame = document.getElementById('reviews-hidden-frame');
+  const success = document.getElementById('review-success');
+
+  if (!form || !frame || !success) return;
+
+  let submitted = false;
+
+  form.addEventListener('submit', function () {
+    submitted = true;
+  });
+
+  frame.addEventListener('load', function () {
+    if (!submitted) return;
+    submitted = false;
+
+    success.style.display = 'block';
+    form.reset();
+    success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+})();
+</script>
+
 </body>
 </html>
